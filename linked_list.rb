@@ -1,154 +1,169 @@
+# frozen_string_literal: true
+
 class LinkedList
+  attr_reader :head, :tail, :head, :tail
 
-    attr_reader :head, :tail
+  def initialize
+    @head = nil
+    @tail = nil
+  end
+
+  # adds new node with value to the end of the list
+  def append(value)
+    new_node = Node.new(value)
+
+    # list is empty
+    if @head.nil?
+      @head = new_node
+    # list not empty
+    else
+      @tail.next_node = new_node
+    end
+
+    @tail = new_node
+
+  end
+
+  def prepend(value)
+    new_node = Node.new(value)
+
+    # list is empty
+    if @head.nil?
+      @head = new_node
+      @tail = new_node
+
+    # list not empty
+    else
+      new_node.next_node = @head
+      @head = new_node
+    end
+  end
+
+  def size
+    return 0 if @head.nil?
+
+    result = 1
+    current_node = @head
+    # while next_node exists
+    until current_node.next_node.nil?
+      current_node = current_node.next_node
+      result += 1
+    end
+
+    result
+  end
+
+  def at(index)
+    return 'IndexOutOfBounds' if index.negative?
+
+    counter = 0
+    current_node = @head
+
+    while counter < index
+
+      return 'IndexOutOfBounds' if current_node == @tail
+
+      current_node = current_node.next_node
+      counter += 1
+    end
+
+    current_node
+  end
+
+  def pop
+    case @head
+    when nil
+      return 'List is Empty!'
+    when @tail
+      'here'
+      to_be_popped = @head
+
+      @head = nil
+      @tail = nil
+
+      return to_be_popped
+    end
+
+    current_node = @head
+
+    current_node = current_node.next_node while current_node.next_node != @tail
+
+    to_be_popped = @tail
+    @tail = current_node
+    current_node.next_node = nil
+
+    to_be_popped
+  end
+
+  def contains?(value)
+    return false if @head.nil?
+
+    current_node = @head
+
+    until current_node.nil?
+      return true if value == current_node.value
+
+      current_node = current_node.next_node
+    end
+
+    false
+  end
+
+  def find(value)
+    return nil if @head.nil?
+
+    current_node = @head
+    counter = 0
+
+    until current_node.nil?
+      return counter if value == current_node.value
+
+      current_node = current_node.next_node
+      counter += 1
+    end
+
+    nil
+  end
+
+  def insert_at(value, index)
+
+    if index == 0
+      prepend(value)
+      return
+    end
+
+    new_node = Node.new(value)
+
+    previous = at(index - 1)
+    new_node.next_node = previous.next_node
+    previous.next_node = new_node
+  end
+
+  def remove_at(index)
+
+    if index < 0 || index >= size
+      return "IndexOutOfBounds"
+    end
+
+    if @head == @tail
+      @head = nil
+      @tail = nil
+      return
+    end
     
-    def initialize
-        @head = nil
-        @tail = nil
+    if index == 0
+      @head = @head.next_node
+      return
     end
 
-    # adds new node with value to the end of the list
-    def append(value)
-        
-        new_node = Node.new(value)
+    previous = at(index-1)
 
-        #list is empty
-        if @head == nil
-            @head = new_node
-            @tail = new_node
-        
-        #list not empty
-        else
-            @tail.next_node = new_node
-            @tail = new_node
-        end
+    if previous.next_node == @tail
+      @tail = previous
+      previous.next_node = nil
+      return
     end
 
-    def prepend(value)
-
-        new_node = Node.new(value)
-
-        #list is empty
-        if @head == nil
-            @head = new_node
-            @tail = new_node
-
-        #list not empty
-        else
-            new_node.next_node = @head
-            @head = new_node
-        end 
-    end
-
-    def size
-        if @head == nil
-            return 0
-        end
-
-        result = 1
-        current_node = @head
-        # while next_node exists
-        while current_node.next_node != nil
-            current_node = current_node.next_node
-            result += 1
-        end
-
-        result
-    end
-
-    def head
-        @head
-    end
-
-    def tail
-        @tail
-    end
-
-    def at(index)
-        if index < 0
-            return "IndexOutOfBounds"
-        end
-
-        counter = 0
-        current_node = @head
-
-        while counter < index
-
-            if current_node == @tail
-                return "IndexOutOfBounds"
-            end
-
-            current_node = current_node.next_node
-            counter += 1
-        end
-
-        current_node
-    end
-
-    def pop
-
-        if @head == nil;
-            return "List is Empty!"
-        elsif @head == @tail
-            "here"
-            to_be_popped = @head
-
-            @head = nil
-            @tail = nil
-
-            return to_be_popped
-        end
-
-        current_node = @head
-
-        while current_node.next_node != @tail
-
-            current_node = current_node.next_node
-        end
-
-        to_be_popped = @tail
-        @tail = current_node
-        current_node.next_node = nil
-
-        to_be_popped
-    end
-
-    def contains?(value)
-        if @head == nil
-            return false
-        end
-
-        current_node = @head
-
-        while current_node != nil
-            if value == current_node.value
-                return true
-            end
-
-            current_node = current_node.next_node
-        end
-
-        return false
-    end
-
-    def find(value)
-        if @head == nil
-            return nil
-        end
-
-        current_node = @head
-        counter = 0
-
-        while current_node != nil
-            if value == current_node.value
-                return counter
-            end
-
-            current_node = current_node.next_node
-            counter += 1
-        end
-
-        return nil
-
-    end
+    previous.next_node = previous.next_node.next_node
+  end
 end
